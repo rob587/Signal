@@ -10,6 +10,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+try {
+  const signalRoutes = require("./routing/signals");
+  console.log("Routes caricate");
+  app.use("/api/signals", signalRoutes);
+} catch (err) {
+  console.error("Errore nel caricamento:", err.message);
+}
+
 app.get("/", (req, res) => {
   res.json({ message: "Api di Signal in corso" });
 });
