@@ -34,3 +34,19 @@ const createSignal = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+const getSignals = async (req, res) => {
+  try {
+    const query = `SELECT * FROM signals ORDER BY created_at DESC;`;
+    const result = await pool.query(query);
+
+    res.json({
+      success: true,
+      signals: result.rows,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { createSignal, getSignals };
