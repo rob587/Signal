@@ -14,6 +14,21 @@ const createSignal = async (req, res) => {
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
     `;
+
+    const result = await pool.query(query, [
+      user_id || 1,
+      content,
+      signal_type || "note",
+      mood || "neutral",
+      tags || [],
+    ]);
+
+    console.log("signal creato:", result.rows[0]);
+
+    res.json({
+      success: true,
+      signal: result.rows[0],
+    });
   } catch (error) {
     console.error("❌ Error:", error);
     res.status(500).json({ error: error.message });
