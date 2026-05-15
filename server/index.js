@@ -18,6 +18,14 @@ try {
   console.error("Errore nel caricamento:", err.message);
 }
 
+try {
+  const connectionRoutes = require("./routing/connections");
+  console.log("✅ Connection routes loaded");
+  app.use("/api/connections", connectionRoutes);
+} catch (err) {
+  console.error("❌ Error loading connection routes:", err.message);
+}
+
 app.get("/", (req, res) => {
   res.json({ message: "Api di Signal in corso" });
 });

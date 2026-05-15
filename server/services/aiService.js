@@ -1,6 +1,6 @@
 const axios = require("axios");
 
-const analyzeSignalConnection = async (currentSignal, allSignals) => {
+const analyzeSignalConnections = async (currentSignal, allSignals) => {
   try {
     console.log("analizzando con Groq..");
 
@@ -64,13 +64,13 @@ Ritorna SOLO array JSON, no spiegazioni!
     console.log("risposta AI:", content);
 
     // pulizia del markdown
-    content.content
+    content = content
       .replace(/```json/g, "")
       .replace(/```/g, "")
       .trim();
 
     // parsing json
-    const connections = json.parse(content);
+    const connections = JSON.parse(content);
 
     console.log("parsing delle connections:", connections);
     return connections;
@@ -79,3 +79,5 @@ Ritorna SOLO array JSON, no spiegazioni!
     throw error;
   }
 };
+
+module.exports = { analyzeSignalConnections };
