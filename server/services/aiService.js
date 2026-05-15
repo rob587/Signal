@@ -43,7 +43,7 @@ Ritorna SOLO array JSON, no spiegazioni!
     const response = await axios.post(
       "https://api.groq.com/openai/v1/chat/completions",
       {
-        model: "mixtral-8x7b-32768",
+        model: "llama-3.1-8b-instant",
         messages: [
           {
             role: "user",
@@ -63,14 +63,17 @@ Ritorna SOLO array JSON, no spiegazioni!
     let content = response.data.choices[0].message.content;
     console.log("risposta AI:", content);
 
-    // pulizia del markdown
-    content = content
-      .replace(/```json/g, "")
-      .replace(/```/g, "")
-      .trim();
+    // Estraggo SOLO l'array JSON (tra [ e ])
+    const jsonMatch = content.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) {
+      throw new Error("No JSON array found in response");
+    }
+
+    const jsonString = jsonMatch[0];
+    console.log("JSON estratto:", jsonString);
 
     // parsing json
-    const connections = JSON.parse(content);
+    const connections = JSON.parse(jsonString);
 
     console.log("parsing delle connections:", connections);
     return connections;
