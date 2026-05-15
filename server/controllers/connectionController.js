@@ -77,3 +77,32 @@ const findConnections = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+const getConnections = async (req, res) => {
+  try {
+    const { signal_id } = req.query;
+
+    let query = "SELECT * FROM connections ORDER BY strength DESC";
+    let params = [];
+
+    if (signal_id) {
+      query = `
+        SELECT * FROM connections 
+        WHERE signal_id_1 = $1 OR signal_id_2 = $1
+        ORDER BY strength DESC
+      `;
+      params = [signal_id];
+    }
+
+    const result = await pool.query(query, params);
+
+    res.json({
+      success: true,
+      connections: result.rows,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { getConnections, findConnections };
