@@ -27,4 +27,33 @@ export const SignalProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  const loadConnections = async () => {
+    try {
+      const response = await getConnections();
+      setConnections(response.data.connections);
+    } catch (err) {
+      console.error("Error loading connections:", err);
+    }
+  };
+
+  const addSignal = async (signalData) => {
+    setLoading(true);
+    try {
+      const response = await createSignal(signalData);
+      setSignals([...signals, response.data.signal]);
+
+      // trova connections per il nuovo signal
+      await findConnections(response.data.signal.id);
+      await loadConnections();
+
+      setError(null);
+      return response.data.signal;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
 };
