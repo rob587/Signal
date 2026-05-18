@@ -46,12 +46,23 @@ const findConnections = async (req, res) => {
     const savedConnections = [];
 
     for (const conn of aiConnections) {
+      // Verifica che il signal_id esista
+      const signalExists = await pool.query(
+        "SELECT id FROM signals WHERE id = $1",
+        [conn.signal_id],
+      );
+
+      if (signalExists.rows.length === 0) {
+        console.log(`⚠️ Signal ${conn.signal_id} non esiste, skip`);
+        continue; // Salta questa connection
+      }
+
       const query = `
-        INSERT INTO connections (signal_id_1, signal_id_2, strength, relationship_type)
-        VALUES ($1, $2, $3, $4)
-        ON CONFLICT DO NOTHING
-        RETURNING *;
-      `;
+    INSERT INTO connections (signal_id_1, signal_id_2, strength, relationship_type)
+    VALUES ($1, $2, $3, $4)
+    ON CONFLICT DO NOTHING
+    RETURNING *;
+  `;
 
       const result = await pool.query(query, [
         signal_id,
