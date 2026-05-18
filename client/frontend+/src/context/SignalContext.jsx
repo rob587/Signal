@@ -56,4 +56,25 @@ export const SignalProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadSignals();
+    loadConnections();
+  }, []);
+
+  return (
+    <SignalContext.Provider
+      value={{
+        signals,
+        connections,
+        loading,
+        error,
+        loadSignals,
+        loadConnections,
+        addSignal,
+      }}
+    >
+      {children}
+    </SignalContext.Provider>
+  );
 };
