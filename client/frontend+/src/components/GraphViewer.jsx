@@ -46,6 +46,28 @@ const GraphViewer = () => {
     setNodes(newNodes);
   }, [signals, setNodes]);
 
+  // convertitore delle connections in archi
+  useEffect(() => {
+    const newEdges = connections.map((conn) => ({
+      id: `edge-${conn.id}`,
+      source: conn.signal_id_1.toString(),
+      target: conn.signal_id_2.toString(),
+      animated: true,
+      style: {
+        stroke: getStrengthColor(conn.strength),
+        strokeWidth: conn.strength * 3,
+      },
+      label: `${conn.relationship_type}`,
+      labelStyle: {
+        fontSize: "12px",
+        backgroundColor: "#fff",
+        padding: "2px 6px",
+        borderRadius: "4px",
+      },
+    }));
+    setEdges(newEdges);
+  }, [connections, setEdges]);
+
   return <div></div>;
 };
 
