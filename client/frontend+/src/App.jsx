@@ -1,5 +1,14 @@
+import { SignalProvider } from "./context/SignalContext";
+import Dashboard from "./pages/Dashboard";
+
 function App() {
-  return <></>;
+  return (
+    <>
+      <SignalProvider>
+        <Dashboard />
+      </SignalProvider>
+    </>
+  );
 }
 
 export default App;

@@ -18,10 +18,13 @@ export const SignalProvider = ({ children }) => {
   const loadSignals = async () => {
     setLoading(true);
     try {
+      console.log("📡 Caricando signals dal server...");
       const response = await getSignals();
+      console.log("✅ Signals caricati:", response.data.signals);
       getSignals(response.data.signals);
       setError(null);
     } catch (err) {
+      console.error("❌ Errore caricamento signals:", err);
       setError(err.message);
     } finally {
       setLoading(false);
