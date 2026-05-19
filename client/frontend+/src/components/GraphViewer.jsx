@@ -68,7 +68,39 @@ const GraphViewer = () => {
     setEdges(newEdges);
   }, [connections, setEdges]);
 
-  return <div></div>;
+  const getMoodColor = (mood) => {
+    const colors = {
+      frustrated: "#ef4444",
+      confused: "#f59e0b",
+      curious: "#3b82f6",
+      neutral: "#6366f1",
+      happy: "#10b981",
+    };
+    return colors[mood] || "#6366f1";
+  };
+
+  const getStrengthColor = (strength) => {
+    if (strength > 0.7) return "#10b981";
+    if (strength > 0.5) return "#f59e0b";
+    return "#ef4444";
+  };
+
+  return (
+    <>
+      <div className="w-full h-screen bg-slate-900">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+        >
+          <Background color="#334155" />
+          <Controls />
+          <MiniMap style={{ background: "#0f172a" }} />
+        </ReactFlow>
+      </div>
+    </>
+  );
 };
 
 export default GraphViewer;
