@@ -21,7 +21,7 @@ export const SignalProvider = ({ children }) => {
       console.log("📡 Caricando signals dal server...");
       const response = await getSignals();
       console.log("✅ Signals caricati:", response.data.signals);
-      getSignals(response.data.signals);
+      setSignals(response.data.signals); // ✅ CORRETTO!
       setError(null);
     } catch (err) {
       console.error("❌ Errore caricamento signals:", err);
