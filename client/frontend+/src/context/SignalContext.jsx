@@ -4,6 +4,8 @@ import {
   getConnections,
   findConnections,
   createSignal,
+  deleteSignal,
+  editSignal,
 } from "../services/api";
 
 export const SignalContext = createContext();
@@ -60,6 +62,45 @@ export const SignalProvider = ({ children }) => {
     }
   };
 
+  const deleteSignal = async (id) => {
+    setLoading(true);
+    try {
+      await deleteSignalAPI(id);
+
+      // Rimuovi il segnale dalla lista
+      setSignals((prev) => prev.filter((s) => s.id !== id));
+
+      await loadConnections();
+
+      setError(null);
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const editSignal = async (id, updatedData) => {
+    setLoading(true);
+    try {
+      const response = await editSignalAPI(id, updatedData);
+
+      setSignals((prev) => prev.map((s) => (s.id === id ? response.data : s)));
+
+      await findConnections(id);
+      await loadConnections();
+
+      setError(null);
+      return response.data;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadSignals();
     loadConnections();
@@ -75,6 +116,8 @@ export const SignalProvider = ({ children }) => {
         loadSignals,
         loadConnections,
         addSignal,
+        deleteSignal,
+        editSignal,
       }}
     >
       {children}
