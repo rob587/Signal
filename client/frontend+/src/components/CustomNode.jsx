@@ -16,7 +16,26 @@ const getMoodColor = (mood) => {
   return colors[mood] || "#6366f1";
 };
 
-const CustomNode = () => {
+const CustomNode = ({ id, data }) => {
+  const { deleteSignal } = useContext(SignalContext);
+
+  const handleEdit = () => {
+    if (data.onEdit) {
+      data.onEdit(id);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("Sei sicuro di voler eliminare questo segnale?")) {
+      try {
+        await deleteSignal(parseInt(id));
+      } catch (error) {
+        console.error("Errore:", error);
+        alert("Errore durante l'eliminazione");
+      }
+    }
+  };
+
   return <div></div>;
 };
 
