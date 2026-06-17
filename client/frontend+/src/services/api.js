@@ -23,4 +23,28 @@ export const getConnections = (signalId = null) => {
   return API.get(url);
 };
 
+export const deleteSignal = async (id) => {
+  const response = await fetch(`http://localhost:5000/api/signals/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error("Errore nell'eliminazione del segnale");
+  }
+  return response.json();
+};
+
+export const editSignal = async (id, data) => {
+  const response = await fetch(`http://localhost:5000/api/signals/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) {
+    throw new Error("Errore nella modifica del segnale");
+  }
+  return response.json();
+};
+
 export default API;
