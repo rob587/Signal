@@ -1,4 +1,6 @@
-import React, { useContext, useCallback, useEffect, useState } from "react";
+// client/src/components/GraphViewer.jsx (o pages/Dashboard.jsx)
+
+import React, { useContext, useEffect, useState } from "react";
 import ReactFlow, {
   Controls,
   Background,
@@ -19,6 +21,7 @@ const nodeTypes = {
 const GraphViewer = () => {
   const { signals, connections, deleteSignal, editSignal } =
     useContext(SignalContext);
+
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -26,31 +29,75 @@ const GraphViewer = () => {
   const [editingSignal, setEditingSignal] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Converti signals in nodi React Flow con tipo custom
+  // Converti signals in nodi React Flow
   useEffect(() => {
-    const newNodes = signals.map((signal, index) => ({
-      id: signal.id.toString(),
-      type: "custom",
-      data: {
-        content: signal.content,
-        mood: signal.mood,
-        onEdit: (id) => {
-          // Apri modale con il segnale da editare
-          const signalToEdit = signals.find((s) => s.id === parseInt(id));
-          setEditingSignal(signalToEdit);
-          setIsModalOpen(true);
-        },
-      },
-      position: {
-        x: Math.cos((index / signals.length) * Math.PI * 2) * 300 + 400,
-        y: Math.sin((index / signals.length) * Math.PI * 2) * 300 + 300,
-      },
-    }));
+    if (!signals || signals.length === 0) {
+      setNodes([]);
+      return;
+    }
+
+    const newNodes = signals
+      .map((signal, index) => {
+        if (!signal || !signal.id) {
+          console.warn("⚠️ Segnale invalido:", signal);
+          return null;
+        }
+
+        return {
+          id: signal.id.toString(),
+          type: "custom",
+          data: {
+            content: signal.content || "Segnale vuoto",
+            mood: signal.mood || "neutral",
+            onEdit: (nodeId) => {
+              if (!nodeId) {
+                console.error("❌ ID nodo non valido");
+                return;
+              }
+
+              const signalId = parseInt(nodeId);
+              if (isNaN(signalId)) {
+                console.error("❌ ID non è un numero:", nodeId);
+                return;
+              }
+
+              const signalToEdit = signals.find((s) => s.id === signalId);
+              if (signalToEdit) {
+                setEditingSignal(signalToEdit);
+                setIsModalOpen(true);
+              } else {
+                console.error("❌ Segnale non trovato per ID:", signalId);
+                alert("Segnale non trovato");
+              }
+            },
+          },
+          position: {
+            x: Math.cos((index / signals.length) * Math.PI * 2) * 300 + 400,
+            y: Math.sin((index / signals.length) * Math.PI * 2) * 300 + 300,
+          },
+          style: {
+            background: getMoodColor(signal.mood),
+            color: "#fff",
+            padding: "10px",
+            borderRadius: "8px",
+            border: "2px solid #6366f1",
+            minWidth: "120px",
+            cursor: "pointer",
+          },
+        };
+      })
+      .filter(Boolean); // Rimuovi i nodi null
+
     setNodes(newNodes);
   }, [signals, setNodes]);
 
-  // Converti connections in edges (come prima)
+  // Converti connections in edges
   useEffect(() => {
+    if (!connections || connections.length === 0) {
+      setEdges([]);
+      return;
+    }
+
     const newEdges = connections.map((conn) => ({
       id: `edge-${conn.id}`,
       source: conn.signal_id_1.toString(),
@@ -72,7 +119,7 @@ const GraphViewer = () => {
     setEdges(newEdges);
   }, [connections, setEdges]);
 
-  // Funzioni helper (come prima)
+  // Funzioni helper per colori
   const getMoodColor = (mood) => {
     const colors = {
       frustrated: "#ef4444",
@@ -93,9 +140,25 @@ const GraphViewer = () => {
 
   // Gestisci salvataggio edit
   const handleSaveEdit = async (updatedData) => {
-    if (editingSignal) {
-      await editSignal(editingSignal.id, updatedData);
+    if (!editingSignal || !editingSignal.id) {
+      console.error("❌ Nessun segnale da modificare");
+      return;
     }
+
+    try {
+      await editSignal(editingSignal.id, updatedData);
+      setIsModalOpen(false);
+      setEditingSignal(null);
+    } catch (error) {
+      console.error("❌ Errore salvataggio:", error);
+      alert("Errore durante il salvataggio: " + (error.message || ""));
+    }
+  };
+
+  // Gestisci chiusura modale
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingSignal(null);
   };
 
   return (
@@ -121,13 +184,9 @@ const GraphViewer = () => {
         </ReactFlow>
       </div>
 
-      {/* Modale di edit */}
       <EditSignalModal
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setEditingSignal(null);
-        }}
+        onClose={handleCloseModal}
         signal={editingSignal}
         onSave={handleSaveEdit}
       />

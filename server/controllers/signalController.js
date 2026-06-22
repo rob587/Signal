@@ -89,7 +89,6 @@ const editSignal = async (req, res) => {
   const { id } = req.params;
   const { content, mood } = req.body;
 
-  // Validazione base
   if (!content) {
     return res.status(400).json({
       error: "Il contenuto è obbligatorio",
@@ -97,10 +96,10 @@ const editSignal = async (req, res) => {
   }
 
   try {
-    // Aggiorna il segnale
+    // ❌ TOGLI updated_at = CURRENT_TIMESTAMP
     const result = await pool.query(
       `UPDATE signals 
-       SET content = $1, mood = $2, updated_at = CURRENT_TIMESTAMP 
+       SET content = $1, mood = $2
        WHERE id = $3 
        RETURNING *`,
       [content, mood, id],

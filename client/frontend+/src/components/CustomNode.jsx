@@ -1,3 +1,5 @@
+// client/src/components/CustomNode.jsx
+
 import React, { useContext } from "react";
 import { Handle, Position } from "reactflow";
 import { Trash2, Pencil } from "lucide-react";
@@ -19,75 +21,79 @@ const CustomNode = ({ id, data }) => {
   const { deleteSignal } = useContext(SignalContext);
 
   const handleEdit = () => {
-    if (data.onEdit) {
+    if (data && data.onEdit && id) {
       data.onEdit(id);
+    } else {
+      console.error("❌ Errore: onEdit non definito o ID mancante");
     }
   };
 
   const handleDelete = async () => {
+    if (!id) {
+      console.error("❌ ID nodo mancante");
+      return;
+    }
+
     if (window.confirm("Sei sicuro di voler eliminare questo segnale?")) {
       try {
-        await deleteSignal(parseInt(id));
+        const signalId = parseInt(id);
+        if (isNaN(signalId)) {
+          console.error("❌ ID non valido:", id);
+          return;
+        }
+        await deleteSignal(signalId);
       } catch (error) {
-        console.error("Errore:", error);
-        alert("Errore durante l'eliminazione");
+        console.error("❌ Errore eliminazione:", error);
+        alert("Errore durante l'eliminazione: " + (error.message || ""));
       }
     }
   };
 
   return (
-    <>
-      <div
-        className="relative group p-3 rounded-lg shadow-lg border-2 transition-all hover:shadow-xl"
-        style={{
-          background: getMoodColor(data.mood),
-          color: "#fff",
-          borderColor: "#6366f1",
-          minWidth: "140px",
-          cursor: "pointer",
-        }}
-      >
-        <Handle
-          type="target"
-          position={Position.Top}
-          className="!bg-gray-400"
-        />
+    <div
+      className="relative group p-3 rounded-lg shadow-lg border-2 transition-all hover:shadow-xl"
+      style={{
+        background: getMoodColor(data?.mood),
+        color: "#fff",
+        borderColor: "#6366f1",
+        minWidth: "140px",
+        cursor: "pointer",
+      }}
+    >
+      <Handle type="target" position={Position.Top} className="!bg-gray-400" />
 
-        {/* Contenuto del nodo */}
-        <div className="text-center">
-          <div className="text-sm font-semibold line-clamp-2">
-            {data.content || "Segnale"}
-          </div>
-          <div className="text-xs opacity-80 mt-1 capitalize">
-            {data.mood || "neutral"}
-          </div>
+      <div className="text-center">
+        <div className="text-sm font-semibold line-clamp-2">
+          {data?.content || "Segnale"}
         </div>
-
-        {/* Pulsanti azioni - visibili al hover */}
-        <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button
-            onClick={handleEdit}
-            className="p-1.5 bg-white rounded-full shadow-md hover:bg-gray-100 transition"
-            title="Modifica"
-          >
-            <Pencil size={14} className="text-blue-600" />
-          </button>
-          <button
-            onClick={handleDelete}
-            className="p-1.5 bg-white rounded-full shadow-md hover:bg-red-50 transition"
-            title="Elimina"
-          >
-            <Trash2 size={14} className="text-red-500" />
-          </button>
+        <div className="text-xs opacity-80 mt-1 capitalize">
+          {data?.mood || "neutral"}
         </div>
-
-        <Handle
-          type="source"
-          position={Position.Bottom}
-          className="!bg-gray-400"
-        />
       </div>
-    </>
+
+      <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button
+          onClick={handleEdit}
+          className="p-1.5 bg-white rounded-full shadow-md hover:bg-gray-100 transition"
+          title="Modifica"
+        >
+          <Pencil size={14} className="text-blue-600" />
+        </button>
+        <button
+          onClick={handleDelete}
+          className="p-1.5 bg-white rounded-full shadow-md hover:bg-red-50 transition"
+          title="Elimina"
+        >
+          <Trash2 size={14} className="text-red-500" />
+        </button>
+      </div>
+
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="!bg-gray-400"
+      />
+    </div>
   );
 };
 
