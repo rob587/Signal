@@ -62,14 +62,12 @@ export const SignalProvider = ({ children }) => {
     }
   };
 
-  const deleteSignal = async (id) => {
+  const deleteSignalHandler = async (id) => {
     setLoading(true);
     try {
-      await deleteSignalAPI(id);
+      await deleteSignal(id); // ← USA deleteSignal DIRETTAMENTE
 
-      // Rimuovi il segnale dalla lista
       setSignals((prev) => prev.filter((s) => s.id !== id));
-
       await loadConnections();
 
       setError(null);
@@ -81,10 +79,10 @@ export const SignalProvider = ({ children }) => {
     }
   };
 
-  const editSignal = async (id, updatedData) => {
+  const editSignalHandler = async (id, updatedData) => {
     setLoading(true);
     try {
-      const response = await editSignalAPI(id, updatedData);
+      const response = await editSignal(id, updatedData); // ← USA editSignal DIRETTAMENTE
 
       setSignals((prev) => prev.map((s) => (s.id === id ? response.data : s)));
 
@@ -116,8 +114,8 @@ export const SignalProvider = ({ children }) => {
         loadSignals,
         loadConnections,
         addSignal,
-        deleteSignal,
-        editSignal,
+        deleteSignal: deleteSignalHandler,
+        editSignal: editSignalHandler,
       }}
     >
       {children}
