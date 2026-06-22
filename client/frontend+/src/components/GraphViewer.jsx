@@ -1,5 +1,4 @@
-import React from "react";
-import { useContext, useCallback, useEffect, useState } from "react";
+import React, { useContext, useCallback, useEffect, useState } from "react";
 import ReactFlow, {
   Controls,
   Background,
@@ -8,43 +7,49 @@ import ReactFlow, {
   MiniMap,
 } from "reactflow";
 import { SignalContext } from "../context/SignalContext";
+import CustomNode from "../components/CustomNode";
+import EditSignalModal from "../components/EditSignalModal";
 import "reactflow/dist/style.css";
 
+// Registra il nodo personalizzato
+const nodeTypes = {
+  custom: CustomNode,
+};
+
 const GraphViewer = () => {
-  const { signals, connections } = useContext(SignalContext);
+  const { signals, connections, deleteSignal, editSignal } =
+    useContext(SignalContext);
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  // convertitore dei signals in nodi react flow
+  // Stato per il modale di edit
+  const [editingSignal, setEditingSignal] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Converti signals in nodi React Flow con tipo custom
   useEffect(() => {
     const newNodes = signals.map((signal, index) => ({
       id: signal.id.toString(),
+      type: "custom",
       data: {
-        label: (
-          <div className="text-center text-sm font-semibold">
-            <div>{signal.content.substring(0, 30)}...</div>
-            <div className="text-xs text-gray-400 mt-1">{signal.mood}</div>
-          </div>
-        ),
+        content: signal.content,
+        mood: signal.mood,
+        onEdit: (id) => {
+          // Apri modale con il segnale da editare
+          const signalToEdit = signals.find((s) => s.id === parseInt(id));
+          setEditingSignal(signalToEdit);
+          setIsModalOpen(true);
+        },
       },
       position: {
-        x: Math.cos((index / signals.length) * Math.PI * 2) * 300,
-        y: Math.sin((index / signals.length) * Math.PI * 2) * 300,
-      },
-      style: {
-        background: getMoodColor(signal.mood),
-        color: "#fff",
-        padding: "10px",
-        borderRadius: "8px",
-        border: "2px solid #6366f1",
-        minWidth: "120px",
-        cursor: "pointer",
+        x: Math.cos((index / signals.length) * Math.PI * 2) * 300 + 400,
+        y: Math.sin((index / signals.length) * Math.PI * 2) * 300 + 300,
       },
     }));
     setNodes(newNodes);
   }, [signals, setNodes]);
 
-  // convertitore delle connections in archi
+  // Converti connections in edges (come prima)
   useEffect(() => {
     const newEdges = connections.map((conn) => ({
       id: `edge-${conn.id}`,
@@ -53,19 +58,21 @@ const GraphViewer = () => {
       animated: true,
       style: {
         stroke: getStrengthColor(conn.strength),
-        strokeWidth: conn.strength * 3,
+        strokeWidth: conn.strength * 3 + 1,
       },
-      label: `${conn.relationship_type}`,
+      label: conn.relationship_type || "connesso",
       labelStyle: {
-        fontSize: "12px",
+        fontSize: "10px",
         backgroundColor: "#fff",
         padding: "2px 6px",
         borderRadius: "4px",
+        color: "#333",
       },
     }));
     setEdges(newEdges);
   }, [connections, setEdges]);
 
+  // Funzioni helper (come prima)
   const getMoodColor = (mood) => {
     const colors = {
       frustrated: "#ef4444",
@@ -73,14 +80,22 @@ const GraphViewer = () => {
       curious: "#3b82f6",
       neutral: "#6366f1",
       happy: "#10b981",
+      excited: "#8b5cf6",
     };
     return colors[mood] || "#6366f1";
   };
 
   const getStrengthColor = (strength) => {
     if (strength > 0.7) return "#10b981";
-    if (strength > 0.5) return "#f59e0b";
+    if (strength > 0.4) return "#f59e0b";
     return "#ef4444";
+  };
+
+  // Gestisci salvataggio edit
+  const handleSaveEdit = async (updatedData) => {
+    if (editingSignal) {
+      await editSignal(editingSignal.id, updatedData);
+    }
   };
 
   return (
@@ -91,12 +106,31 @@ const GraphViewer = () => {
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          nodeTypes={nodeTypes}
+          fitView
         >
-          <Background color="#334155" />
+          <Background color="#334155" gap={16} />
           <Controls />
-          <MiniMap style={{ background: "#0f172a" }} />
+          <MiniMap
+            style={{
+              background: "#0f172a",
+              borderRadius: "8px",
+            }}
+            maskColor="rgba(15, 23, 42, 0.6)"
+          />
         </ReactFlow>
       </div>
+
+      {/* Modale di edit */}
+      <EditSignalModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingSignal(null);
+        }}
+        signal={editingSignal}
+        onSave={handleSaveEdit}
+      />
     </>
   );
 };

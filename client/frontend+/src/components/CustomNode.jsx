@@ -1,4 +1,3 @@
-import React from "react";
 import React, { useContext } from "react";
 import { Handle, Position } from "reactflow";
 import { Trash2, Pencil } from "lucide-react";
