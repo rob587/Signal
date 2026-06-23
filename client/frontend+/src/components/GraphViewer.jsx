@@ -63,11 +63,14 @@ const GraphViewer = () => {
 
               const signalToEdit = signals.find((s) => s.id === signalId);
               if (signalToEdit) {
+                console.log("✅ Apertura modale per:", signalToEdit);
                 setEditingSignal(signalToEdit);
                 setIsModalOpen(true);
               } else {
                 console.error("❌ Segnale non trovato per ID:", signalId);
-                alert("Segnale non trovato");
+
+                loadSignals();
+                alert("Segnale non trovato. Ricarico i dati...");
               }
             },
           },
@@ -86,7 +89,7 @@ const GraphViewer = () => {
           },
         };
       })
-      .filter(Boolean); // Rimuovi i nodi null
+      .filter(Boolean);
 
     setNodes(newNodes);
   }, [signals, setNodes]);

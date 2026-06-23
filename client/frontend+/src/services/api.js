@@ -34,17 +34,27 @@ export const deleteSignal = async (id) => {
 };
 
 export const editSignal = async (id, data) => {
-  const response = await fetch(`http://localhost:5000/api/signals/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-  if (!response.ok) {
-    throw new Error("Errore nella modifica del segnale");
+  try {
+    const response = await fetch(`http://localhost:5000/api/signals/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Errore nella modifica del segnale");
+    }
+
+    const result = await response.json();
+    console.log("✅ Risposta edit:", result); // ← LOG PER DEBUG
+    return result; // ← RESTITUISCE IL SEGNALE AGGIORNATO
+  } catch (error) {
+    console.error("❌ Errore editSignal:", error);
+    throw error;
   }
-  return response.json();
 };
 
 export default API;

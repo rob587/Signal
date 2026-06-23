@@ -96,7 +96,6 @@ const editSignal = async (req, res) => {
   }
 
   try {
-    // ❌ TOGLI updated_at = CURRENT_TIMESTAMP
     const result = await pool.query(
       `UPDATE signals 
        SET content = $1, mood = $2

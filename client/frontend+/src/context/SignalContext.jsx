@@ -82,16 +82,27 @@ export const SignalProvider = ({ children }) => {
   const editSignalHandler = async (id, updatedData) => {
     setLoading(true);
     try {
-      const response = await editSignal(id, updatedData); // ← USA editSignal DIRETTAMENTE
+      const response = await editSignal(id, updatedData);
 
-      setSignals((prev) => prev.map((s) => (s.id === id ? response.data : s)));
+      // ✅ VERIFICA CHE response ESISTA E ABBIA I DATI
+      if (!response || !response.id) {
+        console.error("❌ Risposta non valida:", response);
+        throw new Error("Risposta dal server non valida");
+      }
 
+      // ✅ AGGIORNA LO STATO CON I NUOVI DATI
+      setSignals((prev) =>
+        prev.map((s) => (s.id === id ? { ...s, ...response } : s)),
+      );
+
+      // Ricarica le connessioni
       await findConnections(id);
       await loadConnections();
 
       setError(null);
-      return response.data;
+      return response;
     } catch (err) {
+      console.error("❌ Errore modifica:", err);
       setError(err.message);
       throw err;
     } finally {

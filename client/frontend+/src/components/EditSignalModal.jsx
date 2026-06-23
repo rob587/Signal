@@ -9,9 +9,14 @@ const EditSignalModal = ({ isOpen, onClose, signal, onSave }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (signal && signal.content !== undefined) {
+    // ✅ CONTROLLO CHE signal ESISTA PRIMA DI USARLO
+    if (signal && signal.id) {
       setContent(signal.content || "");
       setMood(signal.mood || "neutral");
+    } else {
+      // Se signal è undefined, resetta i campi
+      setContent("");
+      setMood("neutral");
     }
   }, [signal]);
 
@@ -36,9 +41,10 @@ const EditSignalModal = ({ isOpen, onClose, signal, onSave }) => {
         content: content.trim(),
         mood: mood,
       });
+      // ✅ NON CHIUDERE IL MODALE QUI - lascia che il parent lo chiuda dopo il successo
     } catch (error) {
       console.error("❌ Errore salvataggio:", error);
-      alert("Errore durante il salvataggio");
+      alert("Errore durante il salvataggio: " + (error.message || ""));
     } finally {
       setLoading(false);
     }
