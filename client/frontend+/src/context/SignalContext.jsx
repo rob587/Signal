@@ -46,10 +46,12 @@ export const SignalProvider = ({ children }) => {
     setLoading(true);
     try {
       const response = await createSignal(signalData);
-      setSignals([...signals, response.data.signal]);
 
       // trova connections per il nuovo signal
       await findConnections(response.data.signal.id);
+
+      // ricarica TUTTO dal server — signals + connections freschi
+      await loadSignals();
       await loadConnections();
 
       setError(null);
@@ -65,7 +67,7 @@ export const SignalProvider = ({ children }) => {
   const deleteSignalHandler = async (id) => {
     setLoading(true);
     try {
-      await deleteSignal(id); // ← USA deleteSignal DIRETTAMENTE
+      await deleteSignal(id);
 
       setSignals((prev) => prev.filter((s) => s.id !== id));
       await loadConnections();
@@ -84,13 +86,11 @@ export const SignalProvider = ({ children }) => {
     try {
       const response = await editSignal(id, updatedData);
 
-      // ✅ VERIFICA CHE response ESISTA E ABBIA I DATI
       if (!response || !response.id) {
         console.error("❌ Risposta non valida:", response);
         throw new Error("Risposta dal server non valida");
       }
 
-      // ✅ AGGIORNA LO STATO CON I NUOVI DATI
       setSignals((prev) =>
         prev.map((s) => (s.id === id ? { ...s, ...response } : s)),
       );

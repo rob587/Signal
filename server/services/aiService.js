@@ -6,38 +6,38 @@ const analyzeSignalConnections = async (currentSignal, allSignals) => {
 
     const signalTexts = allSignals
       .map(
-        (s, i) =>
-          `Signal ${i + 1}: "${s.content}" (mood: ${s.mood}, type: ${s.signal_type})`,
+        (s) =>
+          `Signal ID ${s.id}: "${s.content}" (mood: ${s.mood}, type: ${s.signal_type})`,
       )
       .join("\n");
 
     const prompt = `
 Tu sei un AI che trova connessioni tra idee.
-
-Signal da analizzare:
+Signal da analizzare (ID: ${currentSignal.id}):
 "${currentSignal.content}" (mood: ${currentSignal.mood}, type: ${currentSignal.signal_type})
 
 Altri signals nel sistema:
 ${signalTexts}
 
 TASK:
-1. Identifica quali altri signals sono collegati a questo
-2. Per ogni connessione, ritorna SOLO JSON valido (no markdown):
-{
-  "signal_id": <numero>,
-  "strength": <0.0 a 1.0>,
-  "relationship_type": "<type>",
-  "reason": "<motivo connessione>"
-}
+Identifica quali altri signals sono collegati a questo.
+Usa ESATTAMENTE gli ID numerici mostrati sopra.
+Ritorna SOLO un array JSON valido, senza markdown, senza spiegazioni:
+[
+  {
+    "signal_id": <ID esatto del signal collegato>,
+    "strength": <0.0 a 1.0>,
+    "relationship_type": "<type>",
+    "reason": "<motivo>"
+  }
+]
 
 EXAMPLES di relationship_type:
-- "same_topic" (stesso argomento)
-- "complementary" (si completano)
-- "contradiction" (si contraddicono)
-- "same_framework" (stesso framework/tech)
-- "related_problem" (problema correlato)
-
-Ritorna SOLO array JSON, no spiegazioni!
+- "same_topic"
+- "complementary"
+- "contradiction"
+- "same_framework"
+- "related_problem"
 `;
 
     const response = await axios.post(
