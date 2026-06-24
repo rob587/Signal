@@ -20,13 +20,13 @@ export const SignalProvider = ({ children }) => {
   const loadSignals = async () => {
     setLoading(true);
     try {
-      console.log("📡 Caricando signals dal server...");
+      console.log(" Caricando signals dal server...");
       const response = await getSignals();
-      console.log("✅ Signals caricati:", response.data.signals);
-      setSignals(response.data.signals); // ✅ CORRETTO!
+      console.log(" Signals caricati:", response.data.signals);
+      setSignals(response.data.signals);
       setError(null);
     } catch (err) {
-      console.error("❌ Errore caricamento signals:", err);
+      console.error(" Errore caricamento signals:", err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -87,7 +87,7 @@ export const SignalProvider = ({ children }) => {
       const response = await editSignal(id, updatedData);
 
       if (!response || !response.id) {
-        console.error("❌ Risposta non valida:", response);
+        console.error(" Risposta non valida:", response);
         throw new Error("Risposta dal server non valida");
       }
 
@@ -102,7 +102,7 @@ export const SignalProvider = ({ children }) => {
       setError(null);
       return response;
     } catch (err) {
-      console.error("❌ Errore modifica:", err);
+      console.error(" Errore modifica:", err);
       setError(err.message);
       throw err;
     } finally {
