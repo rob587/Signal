@@ -39,7 +39,7 @@ const GraphViewer = () => {
     const newNodes = signals
       .map((signal, index) => {
         if (!signal || !signal.id) {
-          console.warn("⚠️ Segnale invalido:", signal);
+          console.warn("Segnale invalido:", signal);
           return null;
         }
 
@@ -51,7 +51,7 @@ const GraphViewer = () => {
             mood: signal.mood || "neutral",
             onEdit: (nodeId) => {
               if (!nodeId) {
-                console.error("❌ ID nodo non valido");
+                console.error(" ID nodo non valido");
                 return;
               }
 
@@ -63,11 +63,11 @@ const GraphViewer = () => {
 
               const signalToEdit = signals.find((s) => s.id === signalId);
               if (signalToEdit) {
-                console.log("✅ Apertura modale per:", signalToEdit);
+                console.log(" Apertura modale per:", signalToEdit);
                 setEditingSignal(signalToEdit);
                 setIsModalOpen(true);
               } else {
-                console.error("❌ Segnale non trovato per ID:", signalId);
+                console.error(" Segnale non trovato per ID:", signalId);
 
                 loadSignals();
                 alert("Segnale non trovato. Ricarico i dati...");
@@ -153,7 +153,7 @@ const GraphViewer = () => {
       setIsModalOpen(false);
       setEditingSignal(null);
     } catch (error) {
-      console.error("❌ Errore salvataggio:", error);
+      console.error(" Errore salvataggio:", error);
       alert("Errore durante il salvataggio: " + (error.message || ""));
     }
   };

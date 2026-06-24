@@ -33,7 +33,7 @@ const SignalForm = () => {
   return (
     <>
       <div className="bg-slate-800 p-6 rounded-lg shadow-lg border border-slate-700">
-        <h2 className="text-2xl font-bold text-white mb-4">✨ Nuovo Signal</h2>
+        <h2 className="text-2xl font-bold text-white mb-4"> Nuovo Signal</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <textarea

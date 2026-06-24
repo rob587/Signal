@@ -1,5 +1,3 @@
-// client/src/components/CustomNode.jsx
-
 import React, { useContext } from "react";
 import { Handle, Position } from "reactflow";
 import { Trash2, Pencil } from "lucide-react";
@@ -24,13 +22,13 @@ const CustomNode = ({ id, data }) => {
     if (data && data.onEdit && id) {
       data.onEdit(id);
     } else {
-      console.error("❌ Errore: onEdit non definito o ID mancante");
+      console.error(" Errore: onEdit non definito o ID mancante");
     }
   };
 
   const handleDelete = async () => {
     if (!id) {
-      console.error("❌ ID nodo mancante");
+      console.error(" ID nodo mancante");
       return;
     }
 
@@ -38,12 +36,12 @@ const CustomNode = ({ id, data }) => {
       try {
         const signalId = parseInt(id);
         if (isNaN(signalId)) {
-          console.error("❌ ID non valido:", id);
+          console.error(" ID non valido:", id);
           return;
         }
         await deleteSignal(signalId);
       } catch (error) {
-        console.error("❌ Errore eliminazione:", error);
+        console.error(" Errore eliminazione:", error);
         alert("Errore durante l'eliminazione: " + (error.message || ""));
       }
     }

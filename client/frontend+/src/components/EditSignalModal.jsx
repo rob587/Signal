@@ -9,7 +9,6 @@ const EditSignalModal = ({ isOpen, onClose, signal, onSave }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // ✅ CONTROLLO CHE signal ESISTA PRIMA DI USARLO
     if (signal && signal.id) {
       setContent(signal.content || "");
       setMood(signal.mood || "neutral");
@@ -41,7 +40,6 @@ const EditSignalModal = ({ isOpen, onClose, signal, onSave }) => {
         content: content.trim(),
         mood: mood,
       });
-      // ✅ NON CHIUDERE IL MODALE QUI - lascia che il parent lo chiuda dopo il successo
     } catch (error) {
       console.error("❌ Errore salvataggio:", error);
       alert("Errore durante il salvataggio: " + (error.message || ""));
@@ -61,7 +59,7 @@ const EditSignalModal = ({ isOpen, onClose, signal, onSave }) => {
         </button>
 
         <h2 className="text-xl font-bold text-gray-800 mb-4">
-          ✏️ Modifica Segnale
+          Modifica Segnale
         </h2>
 
         <form onSubmit={handleSubmit}>
@@ -111,7 +109,7 @@ const EditSignalModal = ({ isOpen, onClose, signal, onSave }) => {
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
               disabled={loading}
             >
-              {loading ? "Salvataggio..." : "💾 Salva"}
+              {loading ? "Salvataggio..." : " Salva"}
             </button>
           </div>
         </form>

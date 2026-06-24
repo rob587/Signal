@@ -13,7 +13,7 @@ const Dashboard = () => {
         {/* Sidebar */}
         <div className="w-96 bg-slate-900 border-r border-slate-700 p-6 overflow-y-auto">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">🚀 Signal</h1>
+            <h1 className="text-3xl font-bold text-white mb-2"> Signal</h1>
             <p className="text-gray-400">AI Knowledge & Trend System</p>
           </div>
 
